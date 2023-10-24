@@ -64,7 +64,7 @@ func convValue(value string) interface{} {
 
 func ConvJson(fr *csv.Reader, header []string) ([]byte, error) {
 	row := map[string]any{}
-	line, err := fr.Read() //lê uma linha
+	line, err := fr.Read()
 
 	if err != nil {
 		return nil, err
@@ -74,7 +74,6 @@ func ConvJson(fr *csv.Reader, header []string) ([]byte, error) {
 		row[header[i]] = convValue(line[i])
 	}
 
-	//Escreve em um JSON
 	dataJson, err := json.Marshal(row)
 
 	if err != nil {

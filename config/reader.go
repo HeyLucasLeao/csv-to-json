@@ -8,7 +8,6 @@ import (
 )
 
 func NewJSON() *os.File {
-	//carregar .env para pegar nome de arquivo
 	filepath := fmt.Sprintf("./data/%s", os.Getenv("JSON_FILENAME"))
 	f, err := os.OpenFile(filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
@@ -39,7 +38,7 @@ func NewCSV() *csv.Reader {
 	}
 
 	fr := csv.NewReader(f)
-	fr.Comma = []rune(os.Getenv("CSV_COMMA"))[0] // env para escolher separador
+	fr.Comma = []rune(os.Getenv("CSV_COMMA"))[0]
 
 	if err != nil {
 		panic(err)
