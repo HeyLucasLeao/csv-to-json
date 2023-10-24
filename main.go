@@ -19,11 +19,9 @@ func main() {
 		return
 	}
 
-	j := config.NewJSON()
+	sf := config.StatFile{}
+	j := config.NewJSON(sf.Partitions)
 	fr := config.NewCSV()
-
-	defer j.Close()
-	defer j.WriteString("]")
 
 	// Read the first row
 	header, err := fr.Read()
@@ -32,6 +30,7 @@ func main() {
 		panic(err)
 	}
 
+	fmt.Print("Writting...\n")
 	for {
 
 		dataJson, err := pipe.ConvJson(fr, header)
@@ -44,12 +43,36 @@ func main() {
 			panic(err)
 		}
 
-		_, err = j.WriteString(fmt.Sprintf("%s,\n", dataJson))
+		bytes, err := j.WriteString(fmt.Sprintf("%s,\n", dataJson))
 
 		if err != nil {
 			panic(err)
 		}
+
+		sf.Bytes += bytes
+		sf.Records++
+
+		if sf.Records > config.MaxRecords {
+			sf.Bytes = 0
+			sf.Records = 0
+			sf.Partitions++
+
+			size, err := config.NewSize(j)
+
+			if err != nil {
+				panic(err)
+			}
+
+			config.TruncateComma(j, size)
+			j.WriteString("]")
+			j.Close()
+
+			j = config.NewJSON(sf.Partitions)
+		}
 	}
+
+	defer j.Close()
+	defer j.WriteString("]")
 
 	size, err := config.NewSize(j)
 
@@ -58,4 +81,5 @@ func main() {
 	}
 
 	config.TruncateComma(j, size)
+	fmt.Printf("Done! Created %d partitions\n", sf.Partitions+1)
 }

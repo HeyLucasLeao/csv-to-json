@@ -5,13 +5,23 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
-func NewJSON() *os.File {
-	filepath := fmt.Sprintf("./data/%s", os.Getenv("JSON_FILENAME"))
-	f, err := os.OpenFile(filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+func NewJSON(p int) *os.File {
+	splittedString := strings.Split(os.Getenv("CSV_FILENAME"), ".")[0]
+	fileName := fmt.Sprintf(splittedString+"-%d.json", p)
 
-	if err := os.Truncate(filepath, 0); err != nil {
+	err := os.MkdirAll("./data/repartitions/", os.ModePerm)
+
+	if err != nil {
+		panic(err)
+	}
+
+	filePath := fmt.Sprintf("./data/repartitions/%s", fileName)
+	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+
+	if err := os.Truncate(filePath, 0); err != nil {
 		log.Printf("Failed to truncate: %v", err)
 	}
 
