@@ -21,6 +21,8 @@ func main() {
 
 	j := config.NewJSON()
 	fr := config.NewCSV()
+
+	defer j.Close()
 	defer j.WriteString("]")
 
 	// Read the first row
