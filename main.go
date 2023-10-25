@@ -20,7 +20,7 @@ func main() {
 		return
 	}
 
-	maxRecords, err := pipe.ConvInteger(os.Getenv("MAX_RECORDS"))
+	maxBytes, err := pipe.ConvInteger(os.Getenv("MAX_BYTES"))
 
 	if err != nil {
 		panic(err)
@@ -32,7 +32,7 @@ func main() {
 	for _, file := range files {
 		go func(file string) {
 			defer wg.Done()
-			pipe.WriteJson(file, maxRecords)
+			pipe.WriteJson(file, int(maxBytes))
 		}(file)
 	}
 	wg.Wait()

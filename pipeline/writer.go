@@ -28,7 +28,7 @@ func CloseJson(f *os.File) {
 	truncateComma(f, size)
 }
 
-func WriteJson(path string, maxRecords int64) {
+func WriteJson(path string, maxBytes int) {
 
 	err := config.TruncateFolder(path)
 
@@ -76,11 +76,9 @@ func WriteJson(path string, maxRecords int64) {
 		}
 
 		sf.Bytes += bytes
-		sf.Records++
 
-		if sf.Records > maxRecords {
+		if sf.Bytes > maxBytes {
 			sf.Bytes = 0
-			sf.Records = 0
 			sf.Partitions++
 
 			CloseJson(j)
