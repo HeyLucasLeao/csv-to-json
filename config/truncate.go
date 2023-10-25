@@ -1,16 +1,14 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"strings"
 )
 
-func TruncateFolder() error {
-	splittedString := strings.Split(os.Getenv("CSV_FILENAME"), ".")[0]
-	folderPath := fmt.Sprintf("./data/" + splittedString)
+func TruncateFolder(path string) error {
+	splittedString := strings.Split(path, ".")[0]
 
-	err := os.RemoveAll(folderPath)
+	err := os.RemoveAll(splittedString)
 	if err != nil {
 		panic(err)
 	}

@@ -2,7 +2,11 @@ package pipe
 
 import (
 	"csv-to-json/config"
+	"fmt"
+	"io"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 func truncateComma(f *os.File, s int64) error {
@@ -16,16 +20,73 @@ func truncateComma(f *os.File, s int64) error {
 	return nil
 }
 
-func CloseJson(f *os.File) error {
-	size, err := config.NewSize(f)
+func CloseJson(f *os.File) {
+	size := config.NewSize(f)
 	defer f.Close()
 	defer f.WriteString("]")
 
+	truncateComma(f, size)
+}
+
+func WriteJson(path string, maxRecords int64) {
+
+	err := config.TruncateFolder(path)
+
 	if err != nil {
-		return err
+		panic(err)
 	}
 
-	truncateComma(f, size)
+	err = config.NewFolder(path)
 
-	return nil
+	if err != nil {
+		panic(err)
+	}
+
+	folder := strings.Split(filepath.Base(path), ".")[0]
+	fr := config.NewCSV(path)
+	sf := config.StatFile{}
+	j := config.NewJSON(folder, sf.Partitions)
+
+	// Read the first row
+	header, err := fr.Read()
+
+	if err != nil {
+		panic(err)
+	}
+
+	for {
+
+		dataJson, err := ConvJson(fr, header)
+
+		if err == io.EOF {
+
+			CloseJson(j)
+
+			break
+		}
+
+		if err != nil {
+			panic(err)
+		}
+
+		bytes, err := j.WriteString(fmt.Sprintf("%s,\n", dataJson))
+
+		if err != nil {
+			panic(err)
+		}
+
+		sf.Bytes += bytes
+		sf.Records++
+
+		if sf.Records > maxRecords {
+			sf.Bytes = 0
+			sf.Records = 0
+			sf.Partitions++
+
+			CloseJson(j)
+
+			j = config.NewJSON(folder, sf.Partitions)
+		}
+	}
+	fmt.Printf("%s done! Created %d partitions.\n", folder, sf.Partitions+1)
 }
