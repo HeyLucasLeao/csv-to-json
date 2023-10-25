@@ -4,13 +4,14 @@ import (
 	"csv-to-json/config"
 	pipe "csv-to-json/pipeline"
 	"fmt"
-	"io"
 	"os"
+	"sync"
 
 	"github.com/joho/godotenv"
 )
 
 func main() {
+	var wg sync.WaitGroup
 
 	err := godotenv.Load()
 
@@ -25,72 +26,15 @@ func main() {
 		panic(err)
 	}
 
-	err = config.TruncateFolder()
+	files := config.NewFile()
 
-	if err != nil {
-		panic(err)
+	wg.Add(len(files))
+	for _, file := range files {
+		go func(file string) {
+			defer wg.Done()
+			pipe.WriteJson(file, maxRecords)
+		}(file)
 	}
+	wg.Wait()
 
-	err = config.NewFolder()
-
-	if err != nil {
-		panic(err)
-	}
-
-	sf := config.StatFile{}
-	j := config.NewJSON(sf.Partitions)
-	fr := config.NewCSV()
-
-	// Read the first row
-	header, err := fr.Read()
-
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Print("Writting...\n")
-	for {
-
-		dataJson, err := pipe.ConvJson(fr, header)
-
-		if err == io.EOF {
-
-			err := pipe.CloseJson(j)
-
-			if err != nil {
-				panic(err)
-			}
-
-			break
-		}
-
-		if err != nil {
-			panic(err)
-		}
-
-		bytes, err := j.WriteString(fmt.Sprintf("%s,\n", dataJson))
-
-		if err != nil {
-			panic(err)
-		}
-
-		sf.Bytes += bytes
-		sf.Records++
-
-		if sf.Records > maxRecords {
-			sf.Bytes = 0
-			sf.Records = 0
-			sf.Partitions++
-
-			err := pipe.CloseJson(j)
-
-			if err != nil {
-				panic(err)
-			}
-
-			j = config.NewJSON(sf.Partitions)
-		}
-	}
-
-	fmt.Printf("Done! Created %d partitions\n", sf.Partitions+1)
 }
