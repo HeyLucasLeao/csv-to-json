@@ -3,35 +3,27 @@ package config
 import (
 	"encoding/csv"
 	"fmt"
-	"log"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
-func NewFolder() error {
-	splittedString := strings.Split(os.Getenv("CSV_FILENAME"), ".")[0]
-	folderPath := fmt.Sprintf("./data/" + splittedString)
+func NewFolder(path string) error {
+	splittedString := strings.Split(path, ".")[0]
 
-	err := os.MkdirAll(folderPath, os.ModePerm)
+	err := os.MkdirAll(splittedString, os.ModePerm)
 
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	return nil
 }
 
-func NewJSON(p int) *os.File {
-	splittedString := strings.Split(os.Getenv("CSV_FILENAME"), ".")[0]
-	fileName := fmt.Sprintf(splittedString+"-%d.json", p)
-	folderPath := fmt.Sprintf("./data/" + splittedString)
+func NewJSON(folder string, p int) *os.File {
+	jsonfile := fmt.Sprintf("data/"+folder+"/"+"part-%d.json", p)
 
-	filePath := fmt.Sprintf(folderPath+"/%s", fileName)
-	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-
-	if err := os.Truncate(filePath, 0); err != nil {
-		log.Printf("Failed to truncate: %v", err)
-	}
+	f, err := os.OpenFile(jsonfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 	if err != nil {
 		panic(err)
@@ -47,9 +39,50 @@ func NewJSON(p int) *os.File {
 	return f
 }
 
-func NewCSV() *csv.Reader {
-	filepath := fmt.Sprintf("./data/%s", os.Getenv("CSV_FILENAME"))
-	f, err := os.Open(filepath)
+func NewSize(f *os.File) int64 {
+	// Get the current size of the file
+	fileInfo, err := f.Stat()
+
+	if err != nil {
+		panic(err)
+	}
+
+	return fileInfo.Size()
+}
+
+func NewFile() []string {
+	root := "data"
+	pattern := os.Getenv("CSV_FILENAME")
+	files := []string{}
+	err := filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !f.IsDir() {
+			m, err := filepath.Match(pattern, f.Name())
+
+			if err != nil {
+				return err
+			}
+
+			if m {
+				files = append(files, path)
+			}
+		}
+
+		return nil
+	},
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return files
+}
+
+func NewCSV(path string) *csv.Reader {
+	f, err := os.Open(path)
 
 	if err != nil {
 		panic(err)
@@ -63,15 +96,4 @@ func NewCSV() *csv.Reader {
 	}
 
 	return fr
-}
-
-func NewSize(f *os.File) (int64, error) {
-	// Get the current size of the file
-	fileInfo, err := f.Stat()
-	if err != nil {
-		fmt.Println(err)
-		return 0, err
-	}
-
-	return fileInfo.Size(), nil
 }
