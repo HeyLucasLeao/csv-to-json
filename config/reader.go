@@ -21,18 +21,6 @@ func NewFolder() error {
 	return nil
 }
 
-func TruncateFolder() error {
-	splittedString := strings.Split(os.Getenv("CSV_FILENAME"), ".")[0]
-	folderPath := fmt.Sprintf("./data/" + splittedString)
-
-	err := os.RemoveAll(folderPath)
-	if err != nil {
-		panic(err)
-	}
-
-	return nil
-}
-
 func NewJSON(p int) *os.File {
 	splittedString := strings.Split(os.Getenv("CSV_FILENAME"), ".")[0]
 	fileName := fmt.Sprintf(splittedString+"-%d.json", p)
@@ -86,15 +74,4 @@ func NewSize(f *os.File) (int64, error) {
 	}
 
 	return fileInfo.Size(), nil
-}
-
-func TruncateComma(f *os.File, s int64) error {
-	// Truncate the file to a new size
-	err := f.Truncate(s - 2)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

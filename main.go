@@ -54,6 +54,13 @@ func main() {
 		dataJson, err := pipe.ConvJson(fr, header)
 
 		if err == io.EOF {
+
+			err := pipe.CloseJson(j)
+
+			if err != nil {
+				panic(err)
+			}
+
 			break
 		}
 
@@ -75,29 +82,15 @@ func main() {
 			sf.Records = 0
 			sf.Partitions++
 
-			size, err := config.NewSize(j)
+			err := pipe.CloseJson(j)
 
 			if err != nil {
 				panic(err)
 			}
 
-			config.TruncateComma(j, size)
-			j.WriteString("]")
-			j.Close()
-
 			j = config.NewJSON(sf.Partitions)
 		}
 	}
 
-	defer j.Close()
-	defer j.WriteString("]")
-
-	size, err := config.NewSize(j)
-
-	if err != nil {
-		panic(err)
-	}
-
-	config.TruncateComma(j, size)
 	fmt.Printf("Done! Created %d partitions\n", sf.Partitions+1)
 }
