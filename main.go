@@ -19,6 +19,24 @@ func main() {
 		return
 	}
 
+	maxRecords, err := pipe.ConvInteger(os.Getenv("MAX_RECORDS"))
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = config.TruncateFolder()
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = config.NewFolder()
+
+	if err != nil {
+		panic(err)
+	}
+
 	sf := config.StatFile{}
 	j := config.NewJSON(sf.Partitions)
 	fr := config.NewCSV()
@@ -52,7 +70,7 @@ func main() {
 		sf.Bytes += bytes
 		sf.Records++
 
-		if sf.Records > config.MaxRecords {
+		if sf.Records > maxRecords {
 			sf.Bytes = 0
 			sf.Records = 0
 			sf.Partitions++

@@ -8,17 +8,37 @@ import (
 	"strings"
 )
 
-func NewJSON(p int) *os.File {
+func NewFolder() error {
 	splittedString := strings.Split(os.Getenv("CSV_FILENAME"), ".")[0]
-	fileName := fmt.Sprintf(splittedString+"-%d.json", p)
+	folderPath := fmt.Sprintf("./data/" + splittedString)
 
-	err := os.MkdirAll("./data/repartitions/", os.ModePerm)
+	err := os.MkdirAll(folderPath, os.ModePerm)
 
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func TruncateFolder() error {
+	splittedString := strings.Split(os.Getenv("CSV_FILENAME"), ".")[0]
+	folderPath := fmt.Sprintf("./data/" + splittedString)
+
+	err := os.RemoveAll(folderPath)
 	if err != nil {
 		panic(err)
 	}
 
-	filePath := fmt.Sprintf("./data/repartitions/%s", fileName)
+	return nil
+}
+
+func NewJSON(p int) *os.File {
+	splittedString := strings.Split(os.Getenv("CSV_FILENAME"), ".")[0]
+	fileName := fmt.Sprintf(splittedString+"-%d.json", p)
+	folderPath := fmt.Sprintf("./data/" + splittedString)
+
+	filePath := fmt.Sprintf(folderPath+"/%s", fileName)
 	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 	if err := os.Truncate(filePath, 0); err != nil {
