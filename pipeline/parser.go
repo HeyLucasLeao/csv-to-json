@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func convInteger(s string) (int64, error) {
+func ConvInteger(s string) (int64, error) {
 	r, err := strconv.ParseInt(s, 10, 64)
 
 	if err != nil {
@@ -15,7 +15,7 @@ func convInteger(s string) (int64, error) {
 	return r, nil
 }
 
-func convBool(s string) (bool, error) {
+func ConvBool(s string) (bool, error) {
 	r, err := strconv.ParseBool(s)
 
 	if err != nil {
@@ -24,7 +24,7 @@ func convBool(s string) (bool, error) {
 	return r, nil
 }
 
-func convFloat(s string) (float64, error) {
+func ConvFloat(s string) (float64, error) {
 	r, err := strconv.ParseFloat(s, 64)
 
 	if err != nil {
@@ -34,21 +34,21 @@ func convFloat(s string) (float64, error) {
 	return r, nil
 }
 
-func convValue(value string) interface{} {
+func ConvValue(value string) interface{} {
 
-	resInt, err_int := convInteger(value)
+	resInt, err_int := ConvInteger(value)
 
 	if err_int == nil {
 		return resInt
 	}
 
-	resBool, err_bool := convBool(value)
+	resBool, err_bool := ConvBool(value)
 
 	if err_bool == nil {
 		return resBool
 	}
 
-	resFloat, err_float := convFloat(value)
+	resFloat, err_float := ConvFloat(value)
 
 	if err_float == nil {
 		return resFloat
@@ -71,7 +71,7 @@ func ConvJson(fr *csv.Reader, header []string) ([]byte, error) {
 	}
 
 	for i := range line {
-		row[header[i]] = convValue(line[i])
+		row[header[i]] = ConvValue(line[i])
 	}
 
 	dataJson, err := json.Marshal(row)
