@@ -6,12 +6,15 @@ import (
 	"os"
 	"sync"
 
+	"github.com/dustin/go-humanize"
 	"github.com/joho/godotenv"
 )
 
+var loggerError = config.NewErrorLogger()
+var loggerInfo = config.NewInfoLogger()
+
 func main() {
 	var wg sync.WaitGroup
-	loggerError := config.NewErrorLogger()
 	err := godotenv.Load()
 
 	if err != nil {
@@ -23,6 +26,8 @@ func main() {
 	if err != nil {
 		loggerError.Fatal(err)
 	}
+
+	loggerInfo.Printf("Partitioning into JSON files with a maximum size of %s", humanize.Bytes(uint64(maxBytes)))
 
 	files := config.NewFile()
 
