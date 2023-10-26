@@ -23,7 +23,8 @@ func main() {
 	maxBytes, err := pipe.ConvInteger(os.Getenv("MAX_BYTES"))
 
 	if err != nil {
-		panic(err)
+		txt := fmt.Sprintf("🚨Error %s trying to create maxBytes!", err.Error())
+		panic(txt)
 	}
 
 	files := config.NewFile()

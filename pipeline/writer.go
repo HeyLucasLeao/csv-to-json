@@ -43,16 +43,13 @@ func WriteJson(path string, maxBytes int) {
 	header, err := fr.Read()
 
 	if err != nil {
-		panic("🚨Error trying to read row in CSV!")
+		txt := fmt.Sprintf("🚨Error %s when trying to read row in CSV!", err.Error())
+		panic(txt)
 	}
 
 	for {
 
 		row, err := fr.Read()
-
-		if err != nil {
-			panic("🚨Error trying to read row in CSV!")
-		}
 
 		if err == io.EOF {
 
@@ -61,16 +58,23 @@ func WriteJson(path string, maxBytes int) {
 			break
 		}
 
+		if err != nil {
+			txt := fmt.Sprintf("🚨Error %s when trying to read row in CSV!", err.Error())
+			panic(txt)
+		}
+
 		dataJson, err := ConvJson(row, header)
 
 		if err != nil {
-			panic("🚨Error trying to Marshal a new row!")
+			txt := fmt.Sprintf("🚨Error %s trying to Marshal a new row!", err.Error())
+			panic(txt)
 		}
 
 		bytes, err := j.WriteString(fmt.Sprintf("%s,\n", dataJson))
 
 		if err != nil {
-			panic("🚨Error trying to write a JSON row!")
+			txt := fmt.Sprintf("🚨Error %s trying to write a JSON row!", err.Error())
+			panic(txt)
 		}
 
 		sf.Bytes += bytes

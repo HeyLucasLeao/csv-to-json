@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strings"
 )
@@ -10,6 +11,7 @@ func TruncateFolder(path string) {
 
 	err := os.RemoveAll(splittedString)
 	if err != nil {
-		panic("🚨Error trying to TruncateFolder!")
+		txt := fmt.Sprintf("🚨Error %s trying to TruncateFolder!", err.Error())
+		panic(txt)
 	}
 }
