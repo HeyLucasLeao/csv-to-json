@@ -30,17 +30,9 @@ func CloseJson(f *os.File) {
 
 func WriteJson(path string, maxBytes int) {
 
-	err := config.TruncateFolder(path)
+	config.TruncateFolder(path)
 
-	if err != nil {
-		panic(err)
-	}
-
-	err = config.NewFolder(path)
-
-	if err != nil {
-		panic(err)
-	}
+	config.NewFolder(path)
 
 	folder := strings.Split(filepath.Base(path), ".")[0]
 	fr := config.NewCSV(path)
@@ -51,12 +43,16 @@ func WriteJson(path string, maxBytes int) {
 	header, err := fr.Read()
 
 	if err != nil {
-		panic(err)
+		panic("🚨Error trying to read row in CSV!")
 	}
 
 	for {
 
-		dataJson, err := ConvJson(fr, header)
+		row, err := fr.Read()
+
+		if err != nil {
+			panic("🚨Error trying to read row in CSV!")
+		}
 
 		if err == io.EOF {
 
@@ -65,14 +61,16 @@ func WriteJson(path string, maxBytes int) {
 			break
 		}
 
+		dataJson, err := ConvJson(row, header)
+
 		if err != nil {
-			panic(err)
+			panic("🚨Error trying to Marshal a new row!")
 		}
 
 		bytes, err := j.WriteString(fmt.Sprintf("%s,\n", dataJson))
 
 		if err != nil {
-			panic(err)
+			panic("🚨Error trying to write a JSON row!")
 		}
 
 		sf.Bytes += bytes

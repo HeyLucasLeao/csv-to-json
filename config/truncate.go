@@ -5,13 +5,11 @@ import (
 	"strings"
 )
 
-func TruncateFolder(path string) error {
+func TruncateFolder(path string) {
 	splittedString := strings.Split(path, ".")[0]
 
 	err := os.RemoveAll(splittedString)
 	if err != nil {
-		panic(err)
+		panic("🚨Error trying to TruncateFolder!")
 	}
-
-	return nil
 }

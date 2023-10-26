@@ -14,7 +14,7 @@ func NewFolder(path string) error {
 	err := os.MkdirAll(splittedString, os.ModePerm)
 
 	if err != nil {
-		panic(err)
+		panic("🚨Error trying to create a new folder!")
 	}
 
 	return nil
@@ -26,14 +26,14 @@ func NewJSON(folder string, p int) *os.File {
 	f, err := os.OpenFile(jsonfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 	if err != nil {
-		panic(err)
+		panic("🚨Error trying to open a new file!")
 	}
 
 	// Write an empty array to the file
 	_, err = f.WriteString("[")
 
 	if err != nil {
-		panic(err)
+		panic("🚨Error writing '[' in the JSON!")
 	}
 
 	return f
@@ -44,7 +44,7 @@ func NewSize(f *os.File) int64 {
 	fileInfo, err := f.Stat()
 
 	if err != nil {
-		panic(err)
+		panic("🚨Couldn't generate fileInfo from os.File!")
 	}
 
 	return fileInfo.Size()
@@ -75,7 +75,7 @@ func NewFile() []string {
 	)
 
 	if err != nil {
-		panic(err)
+		panic("🚨Error unexpected searching from NewFile!")
 	}
 
 	return files
@@ -85,15 +85,11 @@ func NewCSV(path string) *csv.Reader {
 	f, err := os.Open(path)
 
 	if err != nil {
-		panic(err)
+		panic("🚨Error trying to open NewCSV!")
 	}
 
 	fr := csv.NewReader(f)
 	fr.Comma = []rune(os.Getenv("CSV_COMMA"))[0]
-
-	if err != nil {
-		panic(err)
-	}
 
 	return fr
 }

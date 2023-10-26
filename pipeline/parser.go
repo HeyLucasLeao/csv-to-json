@@ -1,7 +1,6 @@
 package pipe
 
 import (
-	"encoding/csv"
 	"encoding/json"
 	"strconv"
 )
@@ -62,13 +61,8 @@ func ConvValue(value string) interface{} {
 
 }
 
-func ConvJson(fr *csv.Reader, header []string) ([]byte, error) {
+func ConvJson(line []string, header []string) ([]byte, error) {
 	row := map[string]any{}
-	line, err := fr.Read()
-
-	if err != nil {
-		return nil, err
-	}
 
 	for i := range line {
 		row[header[i]] = ConvValue(line[i])
