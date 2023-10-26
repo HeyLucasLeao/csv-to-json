@@ -3,7 +3,6 @@ package main
 import (
 	"csv-to-json/config"
 	pipe "csv-to-json/pipeline"
-	"fmt"
 	"os"
 	"sync"
 
@@ -12,18 +11,17 @@ import (
 
 func main() {
 	var wg sync.WaitGroup
-
+	logger := config.CreateLogger()
 	err := godotenv.Load()
 
 	if err != nil {
-		panic("🚨 error loading .env file")
+		logger.Fatal(err)
 	}
 
 	maxBytes, err := pipe.ConvInteger(os.Getenv("MAX_BYTES"))
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨 error %s trying to create maxBytes!", err.Error())
-		panic(txt)
+		logger.Fatal(err)
 	}
 
 	files := config.NewFile()

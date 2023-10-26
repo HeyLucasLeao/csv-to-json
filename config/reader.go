@@ -2,18 +2,18 @@ package config
 
 import (
 	"encoding/csv"
-	"fmt"
 	"os"
 	"path/filepath"
 )
+
+var logger = CreateLogger()
 
 func NewSize(f *os.File) int64 {
 	// Get the current size of the file
 	fileInfo, err := f.Stat()
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨 error %s couldn't read Stat from os.File!", err.Error())
-		panic(txt)
+		logger.Fatal(err)
 	}
 
 	return fileInfo.Size()
@@ -44,12 +44,11 @@ func NewFile() []string {
 	)
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨 error %s unexpected searching from NewFile!", err.Error())
-		panic(txt)
+		logger.Fatal(err)
 	}
 
 	if len(files) <= 0 {
-		panic("🚨 error csv files not found")
+		logger.Fatal(err)
 	}
 
 	return files
@@ -59,8 +58,7 @@ func NewCSV(path string) *csv.Reader {
 	f, err := os.Open(path)
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨 error %s trying to open NewCSV!", err.Error())
-		panic(txt)
+		logger.Fatal(err)
 	}
 
 	fr := csv.NewReader(f)

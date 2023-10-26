@@ -9,14 +9,15 @@ import (
 	"strings"
 )
 
+var logger = config.CreateLogger()
+
 func NewFolder(path string) error {
 	splittedString := strings.Split(path, ".")[0]
 
 	err := os.MkdirAll(splittedString, os.ModePerm)
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨 error %s trying to create a new folder", err.Error())
-		panic(txt)
+		logger.Fatal(err)
 	}
 
 	return nil
@@ -28,16 +29,14 @@ func NewJSON(folder string, p int) *os.File {
 	f, err := os.OpenFile(jsonfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨 error %s trying to open a new file", err.Error())
-		panic(txt)
+		logger.Fatal(err)
 	}
 
 	// Write an empty array to the file
 	_, err = f.WriteString("[")
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨 error %s writing '[' in the JSON", err.Error())
-		panic(txt)
+		logger.Fatal(err)
 	}
 
 	return f
@@ -66,8 +65,7 @@ func WriteJson(path string, maxBytes int) {
 	header, err := fr.Read()
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨 error %s when trying to read row in CSV", err.Error())
-		panic(txt)
+		logger.Fatal(err)
 	}
 
 	for {
@@ -82,22 +80,19 @@ func WriteJson(path string, maxBytes int) {
 		}
 
 		if err != nil {
-			txt := fmt.Sprintf("🚨 error %s when trying to read row in CSV", err.Error())
-			panic(txt)
+			logger.Fatal(err)
 		}
 
 		dataJson, err := ConvJson(row, header)
 
 		if err != nil {
-			txt := fmt.Sprintf("🚨 error %s trying to Marshal a new row", err.Error())
-			panic(txt)
+			logger.Fatal(err)
 		}
 
 		bytes, err := j.WriteString(fmt.Sprintf("%s,\n", dataJson))
 
 		if err != nil {
-			txt := fmt.Sprintf("🚨 error %s trying to write a JSON row", err.Error())
-			panic(txt)
+			logger.Fatal(err)
 		}
 
 		sf.Bytes += bytes
