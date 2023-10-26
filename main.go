@@ -16,14 +16,13 @@ func main() {
 	err := godotenv.Load()
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error loading .env file")
-		return
+		panic("🚨 error loading .env file")
 	}
 
 	maxBytes, err := pipe.ConvInteger(os.Getenv("MAX_BYTES"))
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨Error %s trying to create maxBytes!", err.Error())
+		txt := fmt.Sprintf("🚨 error %s trying to create maxBytes!", err.Error())
 		panic(txt)
 	}
 

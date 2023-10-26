@@ -12,7 +12,7 @@ func NewSize(f *os.File) int64 {
 	fileInfo, err := f.Stat()
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨Error %s couldn't read Stat from os.File!", err.Error())
+		txt := fmt.Sprintf("🚨 error %s couldn't read Stat from os.File!", err.Error())
 		panic(txt)
 	}
 
@@ -44,8 +44,12 @@ func NewFile() []string {
 	)
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨Error %s unexpected searching from NewFile!", err.Error())
+		txt := fmt.Sprintf("🚨 error %s unexpected searching from NewFile!", err.Error())
 		panic(txt)
+	}
+
+	if len(files) <= 0 {
+		panic("🚨 error csv files not found")
 	}
 
 	return files
@@ -55,7 +59,7 @@ func NewCSV(path string) *csv.Reader {
 	f, err := os.Open(path)
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨Error %s trying to open NewCSV!", err.Error())
+		txt := fmt.Sprintf("🚨 error %s trying to open NewCSV!", err.Error())
 		panic(txt)
 	}
 

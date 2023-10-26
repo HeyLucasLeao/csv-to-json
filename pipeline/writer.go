@@ -15,7 +15,7 @@ func NewFolder(path string) error {
 	err := os.MkdirAll(splittedString, os.ModePerm)
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨Error %s trying to create a new folder!", err.Error())
+		txt := fmt.Sprintf("🚨 error %s trying to create a new folder", err.Error())
 		panic(txt)
 	}
 
@@ -28,7 +28,7 @@ func NewJSON(folder string, p int) *os.File {
 	f, err := os.OpenFile(jsonfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨Error %s trying to open a new file!", err.Error())
+		txt := fmt.Sprintf("🚨 error %s trying to open a new file", err.Error())
 		panic(txt)
 	}
 
@@ -36,7 +36,7 @@ func NewJSON(folder string, p int) *os.File {
 	_, err = f.WriteString("[")
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨Error %s writing '[' in the JSON!", err.Error())
+		txt := fmt.Sprintf("🚨 error %s writing '[' in the JSON", err.Error())
 		panic(txt)
 	}
 
@@ -66,7 +66,7 @@ func WriteJson(path string, maxBytes int) {
 	header, err := fr.Read()
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨Error %s when trying to read row in CSV!", err.Error())
+		txt := fmt.Sprintf("🚨 error %s when trying to read row in CSV", err.Error())
 		panic(txt)
 	}
 
@@ -82,21 +82,21 @@ func WriteJson(path string, maxBytes int) {
 		}
 
 		if err != nil {
-			txt := fmt.Sprintf("🚨Error %s when trying to read row in CSV!", err.Error())
+			txt := fmt.Sprintf("🚨 error %s when trying to read row in CSV", err.Error())
 			panic(txt)
 		}
 
 		dataJson, err := ConvJson(row, header)
 
 		if err != nil {
-			txt := fmt.Sprintf("🚨Error %s trying to Marshal a new row!", err.Error())
+			txt := fmt.Sprintf("🚨 error %s trying to Marshal a new row", err.Error())
 			panic(txt)
 		}
 
 		bytes, err := j.WriteString(fmt.Sprintf("%s,\n", dataJson))
 
 		if err != nil {
-			txt := fmt.Sprintf("🚨Error %s trying to write a JSON row!", err.Error())
+			txt := fmt.Sprintf("🚨 error %s trying to write a JSON row", err.Error())
 			panic(txt)
 		}
 
