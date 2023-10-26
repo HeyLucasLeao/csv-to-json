@@ -1,4 +1,4 @@
-package config
+package pipe
 
 import (
 	"fmt"
@@ -14,4 +14,15 @@ func TruncateFolder(path string) {
 		txt := fmt.Sprintf("🚨Error %s trying to TruncateFolder!", err.Error())
 		panic(txt)
 	}
+}
+
+func TruncateComma(f *os.File, s int64) error {
+	// Truncate the file to a new size
+	err := f.Truncate(s - 2)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

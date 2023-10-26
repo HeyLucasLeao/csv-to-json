@@ -9,15 +9,38 @@ import (
 	"strings"
 )
 
-func truncateComma(f *os.File, s int64) error {
-	// Truncate the file to a new size
-	err := f.Truncate(s - 2)
+func NewFolder(path string) error {
+	splittedString := strings.Split(path, ".")[0]
+
+	err := os.MkdirAll(splittedString, os.ModePerm)
 
 	if err != nil {
-		return err
+		txt := fmt.Sprintf("🚨Error %s trying to create a new folder!", err.Error())
+		panic(txt)
 	}
 
 	return nil
+}
+
+func NewJSON(folder string, p int) *os.File {
+	jsonfile := fmt.Sprintf("data/"+folder+"/"+"part-%d.json", p)
+
+	f, err := os.OpenFile(jsonfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+
+	if err != nil {
+		txt := fmt.Sprintf("🚨Error %s trying to open a new file!", err.Error())
+		panic(txt)
+	}
+
+	// Write an empty array to the file
+	_, err = f.WriteString("[")
+
+	if err != nil {
+		txt := fmt.Sprintf("🚨Error %s writing '[' in the JSON!", err.Error())
+		panic(txt)
+	}
+
+	return f
 }
 
 func CloseJson(f *os.File) {
@@ -25,19 +48,19 @@ func CloseJson(f *os.File) {
 	defer f.Close()
 	defer f.WriteString("]")
 
-	truncateComma(f, size)
+	TruncateComma(f, size)
 }
 
 func WriteJson(path string, maxBytes int) {
 
-	config.TruncateFolder(path)
+	TruncateFolder(path)
 
-	config.NewFolder(path)
+	NewFolder(path)
 
 	folder := strings.Split(filepath.Base(path), ".")[0]
 	fr := config.NewCSV(path)
 	sf := config.StatFile{}
-	j := config.NewJSON(folder, sf.Partitions)
+	j := NewJSON(folder, sf.Partitions)
 
 	// Read the first row
 	header, err := fr.Read()
@@ -85,7 +108,7 @@ func WriteJson(path string, maxBytes int) {
 
 			CloseJson(j)
 
-			j = config.NewJSON(folder, sf.Partitions)
+			j = NewJSON(folder, sf.Partitions)
 		}
 	}
 	fmt.Printf("%s done! Created %d partitions.\n", folder, sf.Partitions+1)

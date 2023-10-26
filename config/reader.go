@@ -5,49 +5,14 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 )
-
-func NewFolder(path string) error {
-	splittedString := strings.Split(path, ".")[0]
-
-	err := os.MkdirAll(splittedString, os.ModePerm)
-
-	if err != nil {
-		txt := fmt.Sprintf("🚨Error %s trying to create a new folder!", err.Error())
-		panic(txt)
-	}
-
-	return nil
-}
-
-func NewJSON(folder string, p int) *os.File {
-	jsonfile := fmt.Sprintf("data/"+folder+"/"+"part-%d.json", p)
-
-	f, err := os.OpenFile(jsonfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-
-	if err != nil {
-		txt := fmt.Sprintf("🚨Error %s trying to open a new file!", err.Error())
-		panic(txt)
-	}
-
-	// Write an empty array to the file
-	_, err = f.WriteString("[")
-
-	if err != nil {
-		txt := fmt.Sprintf("🚨Error %s writing '[' in the JSON!", err.Error())
-		panic(txt)
-	}
-
-	return f
-}
 
 func NewSize(f *os.File) int64 {
 	// Get the current size of the file
 	fileInfo, err := f.Stat()
 
 	if err != nil {
-		txt := fmt.Sprintf("🚨Error %s couldn't generate Stat from os.File!", err.Error())
+		txt := fmt.Sprintf("🚨Error %s couldn't read Stat from os.File!", err.Error())
 		panic(txt)
 	}
 
