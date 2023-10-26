@@ -22,36 +22,31 @@ func NewSize(f *os.File) int64 {
 func NewFile() []string {
 	root := "data"
 	pattern := os.Getenv("CSV_FILENAME")
-	files := []string{}
-	err := filepath.Walk(root, func(path string, f os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if !f.IsDir() {
-			m, err := filepath.Match(pattern, f.Name())
-
-			if err != nil {
-				return err
-			}
-
-			if m {
-				files = append(files, path)
-			}
-		}
-
-		return nil
-	},
-	)
+	f := []string{}
+	files, err := os.ReadDir(root)
 
 	if err != nil {
 		loggerError.Fatal(err)
 	}
 
-	if len(files) <= 0 {
+	for _, file := range files {
+		m, err := filepath.Match(pattern, file.Name())
+
+		if err != nil {
+			loggerError.Fatal(err)
+		}
+
+		if m {
+			path := filepath.Join(root, file.Name())
+			f = append(f, path)
+		}
+	}
+
+	if len(f) < 1 {
 		loggerError.Fatal(err)
 	}
 
-	return files
+	return f
 }
 
 func NewCSV(path string) *csv.Reader {

@@ -25,9 +25,10 @@ func NewFolder(path string) error {
 }
 
 func NewJSON(folder string, p int) *os.File {
-	jsonfile := fmt.Sprintf("data/"+folder+"/"+"part-%d.json", p)
+	nameFile := fmt.Sprintf("part-%d.json", p)
+	jsonFile := filepath.Join("data", folder, nameFile)
 
-	f, err := os.OpenFile(jsonfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(jsonFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 	if err != nil {
 		loggerError.Fatal(err)
