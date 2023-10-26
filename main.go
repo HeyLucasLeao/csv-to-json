@@ -11,17 +11,17 @@ import (
 
 func main() {
 	var wg sync.WaitGroup
-	logger := config.CreateLogger()
+	loggerError := config.NewErrorLogger()
 	err := godotenv.Load()
 
 	if err != nil {
-		logger.Fatal(err)
+		loggerError.Fatal(err)
 	}
 
 	maxBytes, err := pipe.ConvInteger(os.Getenv("MAX_BYTES"))
 
 	if err != nil {
-		logger.Fatal(err)
+		loggerError.Fatal(err)
 	}
 
 	files := config.NewFile()

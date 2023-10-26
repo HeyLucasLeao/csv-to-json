@@ -10,7 +10,7 @@ func TruncateFolder(path string) {
 
 	err := os.RemoveAll(splittedString)
 	if err != nil {
-		logger.Fatal(err)
+		loggerError.Fatal(err)
 	}
 }
 

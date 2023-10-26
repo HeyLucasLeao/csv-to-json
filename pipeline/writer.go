@@ -9,7 +9,8 @@ import (
 	"strings"
 )
 
-var logger = config.CreateLogger()
+var loggerError = config.NewErrorLogger()
+var loggerInfo = config.NewInfoLogger()
 
 func NewFolder(path string) error {
 	splittedString := strings.Split(path, ".")[0]
@@ -17,7 +18,7 @@ func NewFolder(path string) error {
 	err := os.MkdirAll(splittedString, os.ModePerm)
 
 	if err != nil {
-		logger.Fatal(err)
+		loggerError.Fatal(err)
 	}
 
 	return nil
@@ -29,14 +30,14 @@ func NewJSON(folder string, p int) *os.File {
 	f, err := os.OpenFile(jsonfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 
 	if err != nil {
-		logger.Fatal(err)
+		loggerError.Fatal(err)
 	}
 
 	// Write an empty array to the file
 	_, err = f.WriteString("[")
 
 	if err != nil {
-		logger.Fatal(err)
+		loggerError.Fatal(err)
 	}
 
 	return f
@@ -65,7 +66,7 @@ func WriteJson(path string, maxBytes int) {
 	header, err := fr.Read()
 
 	if err != nil {
-		logger.Fatal(err)
+		loggerError.Fatal(err)
 	}
 
 	for {
@@ -80,19 +81,19 @@ func WriteJson(path string, maxBytes int) {
 		}
 
 		if err != nil {
-			logger.Fatal(err)
+			loggerError.Fatal(err)
 		}
 
 		dataJson, err := ConvJson(row, header)
 
 		if err != nil {
-			logger.Fatal(err)
+			loggerError.Fatal(err)
 		}
 
 		bytes, err := j.WriteString(fmt.Sprintf("%s,\n", dataJson))
 
 		if err != nil {
-			logger.Fatal(err)
+			loggerError.Fatal(err)
 		}
 
 		sf.Bytes += bytes
@@ -106,5 +107,5 @@ func WriteJson(path string, maxBytes int) {
 			j = NewJSON(folder, sf.Partitions)
 		}
 	}
-	fmt.Printf("%s done! Created %d partitions.\n", folder, sf.Partitions+1)
+	loggerInfo.Printf("%s done! Created %d partitions.\n", folder, sf.Partitions+1)
 }
