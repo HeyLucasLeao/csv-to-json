@@ -43,7 +43,7 @@ func NewFile() []string {
 	}
 
 	if len(f) < 1 {
-		loggerError.Fatal(err)
+		loggerError.Fatal("file not found.")
 	}
 
 	return f

@@ -27,9 +27,9 @@ func main() {
 		loggerError.Fatal(err)
 	}
 
-	loggerInfo.Printf("Partitioning into JSON files with a maximum size of %s", humanize.Bytes(uint64(maxBytes)))
-
 	files := config.NewFile()
+
+	loggerInfo.Printf("Partitioning into JSON files with a maximum size of %s", humanize.Bytes(uint64(maxBytes)))
 
 	wg.Add(len(files))
 	for _, file := range files {
