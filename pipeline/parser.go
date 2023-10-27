@@ -2,7 +2,9 @@ package pipe
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
+	"strings"
 )
 
 func ConvInteger(s string) (int64, error) {
@@ -15,12 +17,16 @@ func ConvInteger(s string) (int64, error) {
 }
 
 func ConvBool(s string) (bool, error) {
-	r, err := strconv.ParseBool(s)
 
-	if err != nil {
-		return false, err
+	if strings.EqualFold(strings.ToLower(s), "true") {
+		return true, nil
 	}
-	return r, nil
+
+	if strings.EqualFold(strings.ToLower(s), "false") {
+		return false, nil
+	}
+
+	return false, fmt.Errorf("invalid boolean value: %s", s)
 }
 
 func ConvFloat(s string) (float64, error) {
